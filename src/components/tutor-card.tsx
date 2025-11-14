@@ -1,0 +1,52 @@
+'use client';
+
+import Image from 'next/image';
+import Link from 'next/link';
+import type { Tutor } from '@/lib/data';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from './ui/card';
+import { Button } from './ui/button';
+import { MapPin, Star, ArrowRight } from 'lucide-react';
+import { placeholderImages } from '@/lib/data';
+
+type TutorCardProps = {
+  tutor: Tutor;
+};
+
+export function TutorCard({ tutor }: TutorCardProps) {
+  const placeholder = placeholderImages.find(p => p.id === `tutor-${tutor.id}`);
+
+  return (
+    <Link href={`/student-support/tutors/${tutor.id}`} className="block group">
+      <Card className="text-center overflow-hidden transition-transform duration-300 ease-in-out hover:-translate-y-2 hover:shadow-xl flex flex-col h-full">
+        <CardHeader>
+          <div className="relative w-32 h-32 mx-auto rounded-full overflow-hidden border-4 border-primary/20">
+            <Image
+              src={placeholder?.imageUrl || `https://picsum.photos/seed/t${tutor.id}/400/400`}
+              alt={`Portrait of ${tutor.name}`}
+              fill
+              className="object-cover"
+              data-ai-hint={placeholder?.imageHint || 'person studying'}
+            />
+          </div>
+          <CardTitle className="mt-4">{tutor.name}</CardTitle>
+          <CardDescription className="flex items-center justify-center gap-1 text-muted-foreground">
+            <MapPin className="h-4 w-4" />
+            {tutor.location}
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="flex-grow">
+          <div className="flex justify-center items-center gap-2 mb-2">
+              <Star className="h-5 w-5 text-yellow-500 fill-yellow-500" />
+              <span className="font-bold text-lg">{tutor.rating.toFixed(1)}</span>
+          </div>
+          <p className="text-xl font-semibold">৳{tutor.rate.toLocaleString()}/month</p>
+        </CardContent>
+        <CardFooter>
+          <Button variant="ghost" className="w-full text-primary group-hover:bg-primary/10">
+            View Details <ArrowRight className="ml-2 h-4 w-4" />
+          </Button>
+        </CardFooter>
+      </Card>
+    </Link>
+  );
+}
