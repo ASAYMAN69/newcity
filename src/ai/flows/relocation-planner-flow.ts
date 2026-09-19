@@ -19,18 +19,20 @@ const GeneratePlanInputSchema = z.object({
 });
 export type GeneratePlanInput = z.infer<typeof GeneratePlanInputSchema>;
 
-const RecommendedItemSchema = z.object({
-  id: z.number().describe('The ID of the recommended item.'),
-  name: z.string().describe('The name of the item or service.'),
-  reason: z.string().describe('A brief explanation of why this item is recommended based on the user\'s needs.'),
-});
+// Fresh instance per call: shared instances make genkit emit $ref/$defs, which the Gemini API rejects.
+const recommendedItemSchema = () =>
+  z.object({
+    id: z.number().describe('The ID of the recommended item.'),
+    name: z.string().describe('The name of the item or service.'),
+    reason: z.string().describe('A brief explanation of why this item is recommended based on the user\'s needs.'),
+  });
 
 const GeneratePlanOutputSchema = z.object({
   plan: z.string().describe('A step-by-step, actionable relocation plan tailored to the user\'s needs. This should be concise and easy to follow.'),
-  recommendedAssistant: RecommendedItemSchema.describe('The most suitable local assistant from the provided list.'),
-  recommendedHousing: RecommendedItemSchema.optional().describe('The most suitable rental property. Recommend only if a strong match is found.'),
-  recommendedCaterer: RecommendedItemSchema.optional().describe('The most suitable caterer. Recommend only if a strong match is found.'),
-  recommendedFurniture: RecommendedItemSchema.optional().describe('A suitable piece of furniture. Recommend only if a strong match is found.'),
+  recommendedAssistant: recommendedItemSchema().describe('The most suitable local assistant from the provided list.'),
+  recommendedHousing: recommendedItemSchema().optional().describe('The most suitable rental property. Recommend only if a strong match is found.'),
+  recommendedCaterer: recommendedItemSchema().optional().describe('The most suitable caterer. Recommend only if a strong match is found.'),
+  recommendedFurniture: recommendedItemSchema().optional().describe('A suitable piece of furniture. Recommend only if a strong match is found.'),
   otherRecommendations: z.string().optional().describe('Brief recommendations for other services like tutors or book stores if applicable based on user needs.'),
 });
 export type GeneratePlanOutput = z.infer<typeof GeneratePlanOutputSchema>;
